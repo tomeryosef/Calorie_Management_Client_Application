@@ -1,19 +1,25 @@
-// Totals.js
-import React from 'react';
-import './css/Totals.css'; // Assuming this is the correct path to your CSS file
+import React, { useEffect, useState } from 'react';
+import './css/Totals.css';
 
 const Totals = ({ meals, selectedDate }) => {
-  const dateMeals = Object.values(meals).flat().filter(
-    item => new Date(item.date).toDateString() === new Date(selectedDate).toDateString()
-  );
+  const [totals, setTotals] = useState({ protein: 0, carbs: 0, fat: 0, calories: 0 });
 
-  const totals = dateMeals.reduce((acc, item) => {
-    acc.protein += item.protein || 0;
-    acc.carbs += item.carbs || 0;
-    acc.fat += item.fat || 0;
-    acc.calories += item.calories || 0;
-    return acc;
-  }, { protein: 0, carbs: 0, fat: 0, calories: 0 }); // Initialize the accumulator
+  useEffect(() => {
+    // Calculate totals from meals matching the selected date
+    const dateMeals = Object.values(meals).flat().filter(item => 
+      new Date(item.date).toDateString() === new Date(selectedDate).toDateString()
+    );
+
+    const newTotals = dateMeals.reduce((acc, item) => {
+      acc.protein += item.protein || 0;
+      acc.carbs += item.carbs || 0;
+      acc.fat += item.fat || 0;
+      acc.calories += item.calories || 0;
+      return acc;
+    }, { protein: 0, carbs: 0, fat: 0, calories: 0 });
+
+    setTotals(newTotals);
+  }, [meals, selectedDate]);
 
   return (
     <div className="totals">

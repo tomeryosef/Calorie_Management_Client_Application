@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const Header = ({ selectedDate, setSelectedDate }) => {
 
+ 
   const handleTodayClick = () => {
     setSelectedDate(new Date());
   };
@@ -21,12 +22,12 @@ const Header = ({ selectedDate, setSelectedDate }) => {
         dateFormat="MMMM d, yyyy"
         className="datepicker"
       />
-      
       <nav className="navigation">
-      <Link to="/" className="nav-link" onClick={handleTodayClick}>Today</Link>
+        <Link to="/" className="nav-link" onClick={handleTodayClick}>Today</Link>
       </nav>
     </header>
   );
 };
+
 
 export default Header;
