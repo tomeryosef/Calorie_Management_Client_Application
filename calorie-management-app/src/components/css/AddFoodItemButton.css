@@ -1,0 +1,21 @@
+/* AddFoodItemButton.css */
+.add-food-item-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-food-item-button:hover {
+    background-color: #45a049;
+  }
+  
+  .add-food-item-button:focus {
+    outline: none;
+  }
+  
