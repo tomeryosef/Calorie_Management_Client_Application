@@ -54,15 +54,6 @@ const HomePage = () => {
       console.error("Failed to fetch meals:", error);
     }
   };
-  
-  
-  
-  
-  
-  
-  
-
-  
 
   // Helper function to check if two dates have the same year, month, and day
   const isSameDate = (date1, date2) => {
@@ -92,6 +83,17 @@ const HomePage = () => {
     setModalIsOpen(true);
   };
 
+  // Function to handle remove button click
+  const handleRemoveItem = async (item) => {
+    if (!db) return;
+    try {
+      // Perform deletion in indexedDB
+      // Add your deletion logic here
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+    }
+  };
+
   return (
     <div className="App">
       <Header selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
@@ -104,13 +106,13 @@ const HomePage = () => {
         }}
         onAddFoodItem={handleAddFoodItem}
         editingItem={editingItem} // Pass editingItem state
+        onRemove={handleRemoveItem} // Pass the remove function
       />
-    <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} />
-    <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} />
-    <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} />
-    <MealTable category="Snack" items={meals.Snack} onEdit={handleEditItem} />
-    <MealTable category="Drink" items={meals.Drink} onEdit={handleEditItem} />
-
+      <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} onRemove={handleRemoveItem} />
+      <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} onRemove={handleRemoveItem} />
+      <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
+      <MealTable category="Snack" items={meals.Snack} onEdit={handleEditItem} onRemove={handleRemoveItem} />
+      <MealTable category="Drink" items={meals.Drink} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <Totals meals={meals} selectedDate={selectedDate} />
     </div>
   );

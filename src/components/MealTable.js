@@ -10,7 +10,7 @@ const MealTable = ({ category, items, onEdit }) => {
           <li key={index}>
             <span>{item.Name}</span> 
             <span>{item.calorie} kcal</span> 
-            <button onClick={() => onEdit(item)}>Edit</button>
+            <button className="editButton" onClick={() => onEdit(item)}>Edit</button>
           </li>
         ))}
       </ul>

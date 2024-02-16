@@ -4,7 +4,7 @@ import './css/AddFoodItemButton.css';
 const AddFoodItemButton = ({ onAdd }) => {
   return (
     <button className="add-food-item-button" onClick={onAdd}>
-      + Add Food Item
+       Add Food Item
     </button>
   );
 };

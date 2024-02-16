@@ -27,7 +27,7 @@ idb.openCalorisDB = async (dbName, dbVersion) => {
   });
 };
 
-idb.addCalories = async (db, { calorie, category, Name, Description, date }) => {
+idb.addCalories = async (db, { id, calorie, category, Name, Description, date }) => {
   return new Promise((resolve, reject) => {
       const transaction = db.transaction(['calories'], 'readwrite');
       const caloriesStore = transaction.objectStore('calories');
@@ -39,19 +39,34 @@ idb.addCalories = async (db, { calorie, category, Name, Description, date }) => 
           date: date.toISOString(), // Convert date to string format for storage
           // Add any other fields you might need
       };
-      // IndexDB query
-      const request = caloriesStore.add(caloriesData);
 
-      // Check if the query success
-      request.onsuccess = (event) => {
-          resolve(true);
-      };
+      // If an ID is provided, it means we're updating an existing entry
+      if (id) {
+          // Use put method to update existing entry
+          const request = caloriesStore.put({ id, ...caloriesData });
 
-      request.onerror = (event) => {
-          reject(new Error(`Error adding calories data: ${event.target.error}`));
-      };
+          request.onsuccess = (event) => {
+              resolve(true);
+          };
+
+          request.onerror = (event) => {
+              reject(new Error(`Error updating calories data: ${event.target.error}`));
+          };
+      } else {
+          // If no ID is provided, it means we're adding a new entry
+          const request = caloriesStore.add(caloriesData);
+
+          request.onsuccess = (event) => {
+              resolve(true);
+          };
+
+          request.onerror = (event) => {
+              reject(new Error(`Error adding calories data: ${event.target.error}`));
+          };
+      }
   });
 };
+
 
 
 

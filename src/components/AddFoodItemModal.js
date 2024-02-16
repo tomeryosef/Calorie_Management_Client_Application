@@ -46,26 +46,26 @@ const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }
     setIsValid(category !== '' && description !== '' && calorie !== '');
   };
 
-  const handleSubmit = () => {
-    if (isValid) {
-      const foodItem = {
-        calorie: parseInt(calorie, 10),
-        category: category,
-        Name: description,
-      };
-  
-      if (editingItem) {
-        // If editing an existing item, pass the editingItem.id
-        onAddFoodItem({ ...foodItem, id: editingItem.id }, true);
-      } else {
-        // If adding a new item, no need to pass the id
-        onAddFoodItem(foodItem, false);
-      }
-  
-      onRequestClose();
+const handleSubmit = () => {
+  if (isValid) {
+    const foodItem = {
+      calorie: parseInt(calorie, 10),
+      category: category,
+      Name: description,
+    };
+
+    if (editingItem) {
+      // If editing an existing item, pass the editingItem.id
+      onAddFoodItem({ ...foodItem, id: editingItem.id }, true);
+    } else {
+      // If adding a new item, no need to pass the id
+      onAddFoodItem(foodItem, false);
     }
-  };
-  
+
+    onRequestClose();
+  }
+};
+
   
 
   return (
