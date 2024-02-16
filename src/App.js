@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
 import HomePage from './Pages/HomePage'; 
 import './App.css';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+
 
   return (
     <Router>

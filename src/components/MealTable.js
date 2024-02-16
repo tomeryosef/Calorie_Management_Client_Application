@@ -1,22 +1,22 @@
 import React from 'react';
 import './css/MealTable.css'; 
 
-const MealTable = ({ mealType, items }) => {
+const MealTable = ({ category, items, onEdit }) => {
   return (
     <div className="mealTable">
-      <h2>{mealType}</h2>
+      <h2>{category}</h2>
       <ul>
         {items.map((item, index) => (
           <li key={index}>
-            <span>{item.itemName}</span>
-            <span>{item.amount} {item.unit}</span>
-            <span>{item.calories} kcal</span>
-</li>
-))}
-</ul>
-{items.length === 0 && <p>No items added for {mealType} yet.</p>}
-</div>
-);
+            <span>{item.Name}</span> 
+            <span>{item.calorie} kcal</span> 
+            <button onClick={() => onEdit(item)}>Edit</button>
+          </li>
+        ))}
+      </ul>
+      {items.length === 0 && <p>No items added for {category} yet.</p>}
+    </div>
+  );
 };
 
 export default MealTable;

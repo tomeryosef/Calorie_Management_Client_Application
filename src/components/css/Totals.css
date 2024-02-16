@@ -29,6 +29,10 @@
 .totals {
   margin-top: 20px;
 }
+.totals h2 {
+  color: #4CAF50;
+  margin-bottom: 1rem;
+}
 
 .total-list .total-row, .total-aggregates {
   display: flex;

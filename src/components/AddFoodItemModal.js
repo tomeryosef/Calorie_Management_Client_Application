@@ -1,98 +1,119 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import './css/AddFoodItemModal.css'; 
+import './css/AddFoodItemModal.css';
 
 Modal.setAppElement('#root');
 
-const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem }) => {
-  const [mealType, setMealType] = useState('Breakfast');
-  const [itemName, setItemName] = useState('');
-  const [amount, setAmount] = useState('');
-  const [unit, setUnit] = useState('pieces');
-  const [calories, setCalories] = useState('');
+const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }) => {
+  const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
+  const [calorie, setCalorie] = useState('');
   const [isValid, setIsValid] = useState(false);
 
-  // List of predefined food items for the datalist
-  const foodItemsList = [
-    { name: 'Banana', calories: 89, image: './images/banana.png' },
-    { name: 'Meat', calories: 250, image: './images/meat.png' },
-    { name: 'Apple', calories: 52, image: './images/apple.png' },
-  ];
-
   useEffect(() => {
-    // Update form validity whenever input values change
-    setIsValid(itemName !== '' && amount !== '' && calories !== '');
-  }, [itemName, amount, calories]);
+    if (editingItem) {
+      setCategory(editingItem.category || '');
+      setDescription(editingItem.Name || ''); // Use "Name" for consistency
+      setCalorie(editingItem.calorie ? editingItem.calorie.toString() : '');
+      setIsValid(true);
+    } else {
+      setCategory('');
+      setDescription('');
+      setCalorie('');
+      setIsValid(false);
+    }
+  }, [editingItem, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case 'mealType':
-        setMealType(value);
+      case 'category':
+        setCategory(value);
         break;
-      case 'itemName':
-        setItemName(value);
+      case 'description':
+        setDescription(value);
         break;
-      case 'amount':
-        // Prevent negative values
-        setAmount(value >= 0 ? value : '');
-        break;
-      case 'unit':
-        setUnit(value);
-        break;
-      case 'calories':
-        // Prevent negative values
-        setCalories(value >= 0 ? value : '');
+      case 'calorie':
+        // Ensure calorie is non-negative
+        if (!isNaN(value) && parseInt(value) >= 0) {
+          setCalorie(value);
+        }
         break;
       default:
         break;
     }
+
+    setIsValid(category !== '' && description !== '' && calorie !== '');
   };
 
   const handleSubmit = () => {
     if (isValid) {
-      const newFoodItem = { mealType, itemName, amount, unit, calories: parseInt(calories, 10) };
-      onAddFoodItem(newFoodItem);
-      onRequestClose(); // Close modal after adding item
-      // Reset form fields
-      setMealType('Breakfast');
-      setItemName('');
-      setAmount('');
-      setUnit('pieces');
-      setCalories('');
+      const foodItem = {
+        calorie: parseInt(calorie, 10),
+        category: category,
+        Name: description,
+      };
+  
+      if (editingItem) {
+        // If editing an existing item, pass the editingItem.id
+        onAddFoodItem({ ...foodItem, id: editingItem.id }, true);
+      } else {
+        // If adding a new item, no need to pass the id
+        onAddFoodItem(foodItem, false);
+      }
+  
+      onRequestClose();
     }
   };
+  
+  
 
   return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Add Food Item" className='Modal' overlayClassName="Overlay">
-      <h2>Add Food Item</h2>
-      {!isValid && <p style={{ color: 'red' }}>Please fill up all fields correctly.</p>}
-      <label>Meal Type:
-        <select name="mealType" value={mealType} onChange={handleInputChange}>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
-        </select>
-      </label>
-      <label>Item Name:
-        <input type="text" name="itemName" value={itemName} onChange={handleInputChange} list="foodItemsList" />
-        <datalist id="foodItemsList">
-          {foodItemsList.map((item, index) => <option key={index} value={item.name}>{item.name}</option>)}
-        </datalist>
-      </label>
-      <label>Amount:
-        <input type="number" name="amount" value={amount} onChange={handleInputChange} />
-      </label>
-      <label>Unit:
-        <select name="unit" value={unit} onChange={handleInputChange}>
-          <option value="pieces">Pieces</option>
-          <option value="grams">Grams</option>
-        </select>
-      </label>
-      <label>Calories:
-        <input type="number" name="calories" value={calories} onChange={handleInputChange} />
-      </label>
-      <button onClick={handleSubmit} disabled={!isValid}>Add</button>
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      contentLabel="Add Food Item"
+      className="Modal"
+      overlayClassName="Overlay"
+    >
+      <h2>{editingItem ? 'Edit Food Item' : 'Add Food Item'}</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Category:
+          <select name="category" value={category} onChange={handleInputChange} required>
+            <option value="">Select Category</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Snack">Snack</option>
+            <option value="Drink">Drink</option>
+          </select>
+        </label>
+        <label>
+          Description:
+          <input
+            type="text"
+            name="description"
+            value={description}
+            onChange={handleInputChange}
+            required
+          />
+        </label>
+        <label>
+          Calories:
+          <input
+            type="number"
+            name="calorie"
+            value={calorie}
+            onChange={handleInputChange}
+            required
+            min="0"
+          />
+        </label>
+        <button type="submit" disabled={!isValid}>
+          {editingItem ? 'Update' : 'Add'}
+        </button>
+      </form>
     </Modal>
   );
 };

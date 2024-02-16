@@ -1,39 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './css/Totals.css';
 
-const Totals = ({ meals, selectedDate }) => {
-  const [totals, setTotals] = useState({ protein: 0, carbs: 0, fat: 0, calories: 0 });
 
-  useEffect(() => {
-    // Calculate totals from meals matching the selected date
-    const dateMeals = Object.values(meals).flat().filter(item => 
-      new Date(item.date).toDateString() === new Date(selectedDate).toDateString()
-    );
-
-    const newTotals = dateMeals.reduce((acc, item) => {
-      acc.protein += item.protein || 0;
-      acc.carbs += item.carbs || 0;
-      acc.fat += item.fat || 0;
-      acc.calories += item.calories || 0;
-      return acc;
-    }, { protein: 0, carbs: 0, fat: 0, calories: 0 });
-
-    setTotals(newTotals);
-  }, [meals, selectedDate]);
+const Totals = ({ meals }) => {
+  // Calculate overall total calories for the selected date
+  const overallTotalCalories = Object.values(meals).reduce((total, categoryMeals) => {
+    return total + categoryMeals.reduce((categoryTotal, meal) => categoryTotal + meal.calorie, 0);
+  }, 0);
 
   return (
     <div className="totals">
-      <div className="total-row">
-        <div className="total-column">Total Protein (g)</div>
-        <div className="total-column">Total Carbs (g)</div>
-        <div className="total-column">Total Fat (g)</div>
-        <div className="total-column">Total Calories</div>
-      </div>
-      <div className="total-row">
-        <div className="total-column">{totals.protein.toFixed(2)}</div>
-        <div className="total-column">{totals.carbs.toFixed(2)}</div>
-        <div className="total-column">{totals.fat.toFixed(2)}</div>
-        <div className="total-column">{totals.calories.toFixed(0)}</div>
+      <h2>Total Calories:</h2>
+      <div>
+      <div className="total-column">Total calories: 
+        <span>{overallTotalCalories} kcal</span></div>
       </div>
     </div>
   );

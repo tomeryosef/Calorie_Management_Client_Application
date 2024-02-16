@@ -1,49 +1,116 @@
 import React, { useState, useEffect } from 'react';
-import AddFoodItemButton from '../components/AddFoodItemButton';
+import AddfoodItemButton from '../components/AddFoodItemButton';
 import AddFoodItemModal from '../components/AddFoodItemModal';
 import MealTable from '../components/MealTable';
 import Totals from '../components/Totals';
-import DatePicker from 'react-datepicker'; 
 import Header from '../components/Header';
-import 'react-datepicker/dist/react-datepicker.css';
+import { idb } from '../idb';
 
 const HomePage = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [db, setDb] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [meals, setMeals] = useState({
-    Breakfast: [],
-    Lunch: [],
-    Dinner: []
-  });
+  const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] });
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
-  // This function adds a new food item to the meals state
-  const addFoodItem = (item) => {
-    // Assuming each item added through the modal includes the date property
-    setMeals(prevMeals => ({
-      ...prevMeals,
-      [item.mealType]: [...prevMeals[item.mealType], { ...item, date: selectedDate.toISOString() }]
-    }));
+  useEffect(() => {
+    const initDB = async () => {
+      try {
+        const db = await idb.openCalorisDB('myCaloriesDB', 1);
+        setDb(db);
+        fetchMealsForDate(selectedDate);
+      } catch (error) {
+        console.error('IndexedDB open error:', error);
+      }
+    };
+    initDB();
+  }, []);
+
+  useEffect(() => {
+    fetchMealsForDate(selectedDate);
+  }, [selectedDate, db]);
+
+  const fetchMealsForDate = async (date) => {
+    if (!db) return;
+    try {
+      const allMeals = await idb.getAllCalories(db);
+      const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
+  
+      allMeals.forEach(meal => {
+        const category = meal.category; // Use "category" consistently
+        const mealDate = new Date(meal.date);
+        
+        // Check if the meal date matches the selected date
+        if (mealDate.getFullYear() === date.getFullYear() &&
+            mealDate.getMonth() === date.getMonth() &&
+            mealDate.getDate() === date.getDate()) {
+          mealsByType[category].push(meal);
+        }
+      });
+  
+      console.log("Meals by type:", mealsByType); // Check meals by type
+      setMeals(mealsByType);
+    } catch (error) {
+      console.error("Failed to fetch meals:", error);
+    }
+  };
+  
+  
+  
+  
+  
+  
+  
+
+  
+
+  // Helper function to check if two dates have the same year, month, and day
+  const isSameDate = (date1, date2) => {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   };
 
-  // Filters meals by selectedDate for passing to MealTable
-  const getMealsForDate = (mealType) => {
-    return meals[mealType].filter(item =>
-      new Date(item.date).toDateString() === selectedDate.toDateString()
-    );
+  const handleAddFoodItem = async (newFoodItem) => {
+    if (!db) return;
+    try {
+      await idb.addCalories(db, { ...newFoodItem, date: selectedDate });
+      // Delay fetching meals to ensure the new item is processed
+      setTimeout(() => {
+        fetchMealsForDate(selectedDate); // Re-fetch meals to update UI
+      }, 500); // Adjust the delay time as needed
+    } catch (error) {
+      console.error("Failed to add meal:", error);
+    }
+  };
+
+  // Function to handle edit button click
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    setModalIsOpen(true);
   };
 
   return (
     <div className="App">
       <Header selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      <AddFoodItemButton onAdd={() => setModalIsOpen(true)} />
+      <AddfoodItemButton onAdd={() => setModalIsOpen(true)} />
       <AddFoodItemModal
         isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        onAddFoodItem={addFoodItem}
+        onRequestClose={() => {
+          setEditingItem(null); // Reset editingItem state when modal closes
+          setModalIsOpen(false);
+        }}
+        onAddFoodItem={handleAddFoodItem}
+        editingItem={editingItem} // Pass editingItem state
       />
-      {["Breakfast", "Lunch", "Dinner"].map(mealType => (
-        <MealTable key={mealType} mealType={mealType} items={getMealsForDate(mealType)} />
-      ))}
+    <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} />
+    <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} />
+    <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} />
+    <MealTable category="Snack" items={meals.Snack} onEdit={handleEditItem} />
+    <MealTable category="Drink" items={meals.Drink} onEdit={handleEditItem} />
+
       <Totals meals={meals} selectedDate={selectedDate} />
     </div>
   );
