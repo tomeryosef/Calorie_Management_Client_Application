@@ -1,13 +1,19 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/Header.css'; 
 import DateDisplay from './DateDisplay';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const Header = ({ selectedDate, setSelectedDate }) => {
+
+  const handleTodayClick = () => {
+    setSelectedDate(new Date());
+  };
+
   return (
     <header className="header">
-      <div className="logo">CalGet Management</div>
+      <div className="logo">Calories Management</div>
       <div>Date Selected: <DateDisplay selectedDate={selectedDate} /></div>
       <DatePicker
         selected={selectedDate}
@@ -17,9 +23,7 @@ const Header = ({ selectedDate, setSelectedDate }) => {
       />
       
       <nav className="navigation">
-        <a href="#today" className="nav-link active">Today</a>
-        <a href="#log" className="nav-link">Today's Log</a>
-        <a href="#stats" className="nav-link">Stats</a>
+      <Link to="/" className="nav-link" onClick={handleTodayClick}>Today</Link>
       </nav>
     </header>
   );
