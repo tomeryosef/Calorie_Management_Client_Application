@@ -3,7 +3,7 @@ import './css/AddFoodItemButton.css';
 
 const AddFoodItemButton = ({ onAdd }) => {
   return (
-    <button className="add-food-item-button" onClick={onAdd}>
+    <button className="AddFoodItemButton" onClick={onAdd}>
        Add Food Item
     </button>
   );

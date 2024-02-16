@@ -1,21 +1,26 @@
-/* AddFoodItemButton.css */
-.add-food-item-button {
-    background-color: #4CAF50;
+.AddFoodItemButton {
+    background-color: #4CAF50; 
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
     font-size: 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    margin: 20px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .add-food-item-button:hover {
-    background-color: #45a049;
-  }
-  
-  .add-food-item-button:focus {
     outline: none;
+    margin-top: 20px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin:auto;
+    margin-top:10px;
+  }
+  
+  .AddFoodItemButton:hover {
+    background-color: #45a049; 
+  }
+  
+  .AddFoodItemButton::before {
+    content: "+"; 
+    margin-right: 5px;
   }
   
