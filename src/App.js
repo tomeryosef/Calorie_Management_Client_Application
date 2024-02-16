@@ -10,6 +10,7 @@ import './App.css';
 
 function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [meals, setMeals] = useState({
     Breakfast: [],
     Lunch: [],
@@ -38,17 +39,18 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
-      <MealTable mealType="Breakfast" items={meals.Breakfast} />
-      <MealTable mealType="Lunch" items={meals.Lunch} />
-      <MealTable mealType="Dinner" items={meals.Dinner} />
+      <Header selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <AddFoodItemButton onAdd={() => setModalIsOpen(true)} /> 
       <AddFoodItemModal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
         onAddFoodItem={addFoodItem}
       />
-      <Totals totals={totals} />
+      <MealTable mealType="Breakfast" items={meals.Breakfast} />
+      <MealTable mealType="Lunch" items={meals.Lunch} />
+      <MealTable mealType="Dinner" items={meals.Dinner} />
+      
+      <Totals meals={meals} selectedDate={selectedDate} />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './css/DateDisplay.css';
 
-const DateDisplay = () => {
-  const currentDate = new Date().toLocaleDateString('en-US', {
+const DateDisplay = ({ selectedDate }) => {
+  // Format the selectedDate prop instead of the current date
+  const displayDate = selectedDate.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -11,7 +12,7 @@ const DateDisplay = () => {
   
   return (
     <div className={styles.dateDisplay}>
-      <span>{currentDate}</span>
+      <span>{displayDate}</span>
     </div>
   );
 };

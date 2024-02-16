@@ -1,26 +1,66 @@
+/* Assuming these styles are in a CSS file imported in your component where Modal is used */
+
 .Modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    marginRight: -50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    overflow: auto;
-    WebkitOverflowScrolling: 'touch';
-    borderRadius: '4px';
-    outline: 'none';
-    padding: '20px';
-  }
-  
-  /* The overlay is what covers the rest of the screen */
-  .Overlay {
-    position: 'fixed';
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    backgroundColor: 'rgba(255, 255, 255, 0.75)';
-  }
-  
+  position: fixed; /* Use fixed instead of absolute for better positioning */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px; /* CSS properties should not be quoted in CSS files */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: auto; /* Or specify a fixed width */
+  max-width: 500px; /* Maximum width */
+  z-index: 1050; /* Ensure it's above other content */
+  overflow-y: auto; /* Ensure content can scroll if it overflows */
+  max-height: 80vh; /* Maximum height to ensure it doesn't go off screen */
+  outline: none; /* Remove focus outline */
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Darker overlay for better focus on the modal */
+  z-index: 1040; /* Just below the modal */
+}
+
+.Modal button {
+  background-color: #4CAF50; /* Example: A green color for primary actions */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 0 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.Modal button:hover {
+  background-color: #45a049;
+}
+
+.Modal input[type="text"],
+.Modal select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.Modal h2 {
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+.Modal label {
+  display: block;
+  margin-top: 10px;
+}

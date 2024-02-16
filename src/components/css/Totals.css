@@ -1,23 +1,41 @@
 /* Totals.css */
 .totals {
-    background: #fff;
-    margin: 20px auto;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 75%;
-  }
-  
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-  }
-  
-  .total-column {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-  
+  background: #ffffff;
+  border-radius: 8px;
+  margin: 20px auto; 
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 75%;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.total-row.header {
+  font-weight: bold;
+  background-color: #e9e9e9;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.total-column {
+  flex: 1;
+  text-align: center;
+}
+
+.totals {
+  margin-top: 20px;
+}
+
+.total-list .total-row, .total-aggregates {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.total-column {
+  margin-right: 10px;
+}
