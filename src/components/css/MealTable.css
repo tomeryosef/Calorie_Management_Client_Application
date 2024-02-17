@@ -21,29 +21,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ECECEC;
-  padding: 0.5rem 0;
+  margin-bottom: 10px; /* Adjust as needed */
 }
 
-.mealTable li:last-child {
-  border-bottom: none;
+.mealTable li span {
+  margin-right: 10px; /* Adjust as needed */
 }
 
-.mealTable span {
-  display: block;
-  color: #333;
-}
-
-.editButton, .removeButton {
-  background-color: #4CAF50; /* Green background */
+.mealTable .editButton,
+.mealTable .removeButton {
+  background-color: #4CAF50; /* Green */
   border: none;
-  color: white; /* White text */
-  padding: 10px 20px; /* Padding */
-  text-align: center; /* Center text */
-  text-decoration: none; /* Remove underline */
+  color: white;
+  padding: 10px 20px; /* Adjust button padding as needed */
+  text-align: center;
+  text-decoration: none;
   display: inline-block;
-  font-size: 16px; /* Set font size */
-  margin: 4px 2px; /* Add some margin */
-  cursor: pointer; /* Add a pointer cursor on hover */
-  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Adjust font size as needed */
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px; /* Rounded corners */
+  margin:0;
+}
+
+.mealTable .removeButton {
+  background-color: #f44336; /* Red */
+}
+
+.mealTable .buttonContainer {
+  display: flex;
+  gap: 10px; /* This sets the space between the buttons */
 }
