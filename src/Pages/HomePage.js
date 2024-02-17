@@ -8,7 +8,8 @@ import { idb } from '../idb';
 
 const HomePage = () => {
   const [db, setDb] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // Retrieve the selected date from localStorage or default to the current date
+  const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date()));
   const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] });
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -29,6 +30,11 @@ const HomePage = () => {
   useEffect(() => {
     fetchMealsForDate(selectedDate);
   }, [selectedDate, db]);
+
+  // Save the selected date to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('selectedDate', selectedDate.toISOString());
+  }, [selectedDate]);
 
   const fetchMealsForDate = async (date) => {
     if (!db) return;
@@ -74,24 +80,18 @@ const HomePage = () => {
     setModalIsOpen(true);
   };
 
-  // Function to handle remove button click
-  const handleRemoveItem = async (item) => {
-    if (!db) return;
-    try {
-      const updatedMeals = { ...meals };
+// Function to handle remove button click
+const handleRemoveItem = async (id) => { // Directly use id to avoid confusion
+  if (!db) return;
+  try {
+    await idb.removeCalories(db, id); // Remove the item from the database
 
-    // Assuming meals has properties like 'Breakfast', 'Lunch', etc.
-    for (const category in updatedMeals) {
-      updatedMeals[category] = updatedMeals[category].filter(entry => entry.id !== item.id);
-    }
-
-    await idb.removeCalories(db, item); // Assuming db is your IndexedDB instance
-
-    setMeals(updatedMeals);
-    } catch (error) {
-      console.error("Failed to remove item:", error);
-    }
-  };
+    // Fetch the updated meals list to ensure UI consistency with the database
+    fetchMealsForDate(selectedDate);
+  } catch (error) {
+    console.error("Failed to remove item:", error);
+  }
+};
 
   return (
     <div className="App">
