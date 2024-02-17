@@ -34,7 +34,7 @@
   color: #333;
 }
 
-.editButton {
+.editButton, .removeButton {
   background-color: #4CAF50; /* Green background */
   border: none;
   color: white; /* White text */

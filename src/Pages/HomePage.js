@@ -55,15 +55,6 @@ const HomePage = () => {
     }
   };
 
-  // Helper function to check if two dates have the same year, month, and day
-  const isSameDate = (date1, date2) => {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  };
-
   const handleAddFoodItem = async (newFoodItem) => {
     if (!db) return;
     try {
@@ -87,8 +78,16 @@ const HomePage = () => {
   const handleRemoveItem = async (item) => {
     if (!db) return;
     try {
-      // Perform deletion in indexedDB
-      // Add your deletion logic here
+      const updatedMeals = { ...meals };
+
+    // Assuming meals has properties like 'Breakfast', 'Lunch', etc.
+    for (const category in updatedMeals) {
+      updatedMeals[category] = updatedMeals[category].filter(entry => entry.id !== item.id);
+    }
+
+    await idb.removeCalories(db, item); // Assuming db is your IndexedDB instance
+
+    setMeals(updatedMeals);
     } catch (error) {
       console.error("Failed to remove item:", error);
     }

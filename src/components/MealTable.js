@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/MealTable.css'; 
 
-const MealTable = ({ category, items, onEdit }) => {
+const MealTable = ({ category, items, onEdit, onRemove }) => {
   return (
     <div className="mealTable">
       <h2>{category}</h2>
@@ -11,6 +11,7 @@ const MealTable = ({ category, items, onEdit }) => {
             <span>{item.Name}</span> 
             <span>{item.calorie} kcal</span> 
             <button className="editButton" onClick={() => onEdit(item)}>Edit</button>
+            <button className="removeButton" onClick={() => onRemove(item.id)}>Remove</button>
           </li>
         ))}
       </ul>

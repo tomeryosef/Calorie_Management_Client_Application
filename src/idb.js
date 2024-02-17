@@ -100,3 +100,20 @@ idb.getAllCalories = async (db) => {
       throw new Error(`Error calculating total calories: ${error.message}`);
     }
   };
+
+  idb.removeCalories = async (db, id) => {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['calories'], 'readwrite');
+        const caloriesStore = transaction.objectStore('calories');
+
+        const request = caloriesStore.delete(id);
+
+        request.onsuccess = (event) => {
+            resolve(true);
+        };
+
+        request.onerror = (event) => {
+            reject(new Error(`Error removing calories data: ${event.target.error}`));
+        };
+    });
+};
