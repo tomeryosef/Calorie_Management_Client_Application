@@ -16,8 +16,6 @@ idb.openCalorisDB = async (dbName, dbVersion) => {
       console.log("dd");
       const caloriesStore = db.createObjectStore('calories', { keyPath: 'id', autoIncrement: true });
       caloriesStore.createIndex('calorieIndex', 'calorie', { unique: false });
-      caloriesStore.createIndex('categoryIndex', 'category', { unique: false });
-      caloriesStore.createIndex('nameIndex', 'Name', { unique: false });
     };
 
     request.onsuccess = (event) => {
@@ -116,4 +114,91 @@ idb.getAllCalories = async (db) => {
             reject(new Error(`Error removing calories data: ${event.target.error}`));
         };
     });
+};
+
+idb.getCaloriesForDay = async (db, date) => {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error('Database not available.'));
+      return;
+    }
+
+    const transaction = db.transaction(['calories'], 'readonly');
+    const caloriesStore = transaction.objectStore('calories');
+    const calorieIndex = caloriesStore.index('calorieIndex');
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999); // Set the end of the day
+    const range = IDBKeyRange.bound(startOfDay.toISOString(), endOfDay.toISOString());
+    const request = calorieIndex.getAll(range);
+    request.onsuccess = (event) => {
+      const caloriesForDay = event.target.result;
+      console.log('Calories for Day:', caloriesForDay);
+      resolve(caloriesForDay);
+    };
+
+    request.onerror = (event) => {
+      console.error(`Error getting calories data for day ${date}:`, event.target.error);
+      reject(new Error(`Error getting calories data for day ${date}: ${event.target.error}`));
+    };
+  });
+};
+
+idb.getCaloriesForMonth = async (db, date) => {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error('Database not available.'));
+      return;
+    }
+
+    const transaction = db.transaction(['calories'], 'readonly');
+    const caloriesStore = transaction.objectStore('calories');
+    const dateIndex = caloriesStore.index('calorieIndex');
+    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    const range = IDBKeyRange.bound(startOfMonth, endOfMonth);
+
+    const request = dateIndex.getAll(range);
+
+    request.onsuccess = (event) => {
+      const caloriesForMonth = event.target.result;
+      resolve(caloriesForMonth);
+    };
+
+    request.onerror = (event) => {
+      console.error(`Error getting calories data for month ${date}:`, event.target.error);
+      reject(new Error(`Error getting calories data for month ${date}: ${event.target.error}`));
+    };
+  });
+};
+
+idb.getCaloriesForYear = async (db, date) => {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error('Database not available.'));
+      return;
+    }
+
+    const transaction = db.transaction(['calories'], 'readonly');
+    const caloriesStore = transaction.objectStore('calories');
+    const dateIndex = caloriesStore.index('calorieIndex');
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const endOfYear = new Date(date.getFullYear(), 11, 31, 23, 59, 59, 999);
+
+    const range = IDBKeyRange.bound(startOfYear, endOfYear);
+
+    const request = dateIndex.getAll(range);
+
+    request.onsuccess = (event) => {
+      const caloriesForYear = event.target.result;
+      resolve(caloriesForYear);
+    };
+
+    request.onerror = (event) => {
+      console.error(`Error getting calories data for year ${date}:`, event.target.error);
+      reject(new Error(`Error getting calories data for year ${date}: ${event.target.error}`));
+    };
+  });
 };
