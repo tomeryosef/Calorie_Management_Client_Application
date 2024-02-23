@@ -6,16 +6,16 @@ import Totals from '../components/Totals';
 import Header from '../components/Header';
 import { idb } from '../idb';
 import { useNavigate } from 'react-router-dom';
+import ReportModal from '../components/ReportModal'; // Import the ReportModal component
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [db, setDb] = useState(null);
-  const [reportType, setReportType] = useState(null);
-  // Retrieve the selected date from localStorage or default to the current date
   const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date()));
   const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] });
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [addModalIsOpen, setAddModalIsOpen] = useState(false); // State for the add food item modal
+  const [reportModalIsOpen, setReportModalIsOpen] = useState(false); // State for the report modal
+  const [reportData, setReportData] = useState(null); // State variable to hold report data
 
   useEffect(() => {
     const initDB = async () => {
@@ -34,7 +34,6 @@ const HomePage = () => {
     fetchMealsForDate(selectedDate);
   }, [selectedDate, db]);
 
-  // Save the selected date to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('selectedDate', selectedDate.toISOString());
   }, [selectedDate]);
@@ -46,10 +45,9 @@ const HomePage = () => {
       const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
   
       allMeals.forEach(meal => {
-        const category = meal.category; // Use "category" consistently
+        const category = meal.category;
         const mealDate = new Date(meal.date);
         
-        // Check if the meal date matches the selected date
         if (mealDate.getFullYear() === date.getFullYear() &&
             mealDate.getMonth() === date.getMonth() &&
             mealDate.getDate() === date.getDate()) {
@@ -57,7 +55,6 @@ const HomePage = () => {
         }
       });
   
-      console.log("Meals by type:", mealsByType); // Check meals by type
       setMeals(mealsByType);
     } catch (error) {
       console.error("Failed to fetch meals:", error);
@@ -68,112 +65,84 @@ const HomePage = () => {
     if (!db) return;
     try {
       await idb.addCalories(db, { ...newFoodItem, date: selectedDate });
-      // Delay fetching meals to ensure the new item is processed
       setTimeout(() => {
-        fetchMealsForDate(selectedDate); // Re-fetch meals to update UI
-      }, 500); // Adjust the delay time as needed
+        fetchMealsForDate(selectedDate);
+      }, 500);
     } catch (error) {
       console.error("Failed to add meal:", error);
     }
   };
 
-  // Function to handle edit button click
   const handleEditItem = (item) => {
-    setEditingItem(item);
-    setModalIsOpen(true);
+    setAddModalIsOpen(true); // Open the add modal for editing
+    // Additional logic for editing item
   };
 
-// Function to handle remove button click
-const handleRemoveItem = async (id) => { // Directly use id to avoid confusion
-  if (!db) return;
-  try {
-    await idb.removeCalories(db, id); // Remove the item from the database
-
-    // Fetch the updated meals list to ensure UI consistency with the database
-    fetchMealsForDate(selectedDate);
-  } catch (error) {
-    console.error("Failed to remove item:", error);
-  }
-};
-
-// Function to generate calories report
-useEffect(() => {
-  const generateReport = async () => {
+  const handleRemoveItem = async (id) => {
+    if (!db) return;
     try {
-      const currentDate = new Date(); // You can modify this to the desired date
+      await idb.removeCalories(db, id);
+      fetchMealsForDate(selectedDate);
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+    }
+  };
+
+  // Function to generate report data and open the modal
+  const generateReport = async (type) => {
+    if (!db) return;
+    try {
+      const currentDate = new Date();
       let reportData;
-      switch (reportType) {
+
+      switch (type) {
         case 'day':
-          reportData = await generateDayReport(currentDate);
+          reportData = await idb.getCaloriesForDay(db, currentDate);
           break;
         case 'month':
-          reportData = await generateMonthReport(currentDate);
+          reportData = await idb.getCaloriesForMonth(db, currentDate);
           break;
         case 'year':
-          reportData = await generateYearReport(currentDate);
+          reportData = await idb.getCaloriesForYear(db, currentDate);
           break;
         default:
           console.error('Invalid report type');
           return;
       }
 
-      // Handle the generated report data (e.g., display it or save it)
-      console.log(reportType);
-      console.log('Calories Report:', reportData);
-      navigate('/report', { state: { reportData, reportType } });
+      setReportData(reportData); // Set the report data
+      setReportModalIsOpen(true); // Open the report modal
     } catch (error) {
-      console.error('Error generating calories report:', error);
+      console.error(`Error generating ${type} report:`, error);
     }
   };
-  generateReport();
-  
-}, [reportType]); // Run the effect whenever reportType changes
-
-  // Function to generate report for a specific day
-  const generateDayReport = async (date) => {
-    // Implement logic to fetch and calculate data for the specified day
-    const dayReportData = await idb.getCaloriesForDay(db, date);
-    return dayReportData;
-  };
-
-  // Function to generate report for a specific month
-  const generateMonthReport = async (date) => {
-    // Implement logic to fetch and calculate data for the specified month
-    const monthReportData = await idb.getCaloriesForMonth(db, date);
-    return monthReportData;
-  };
-
-  // Function to generate report for a specific year
-  const generateYearReport = async (date) => {
-    // Implement logic to fetch and calculate data for the specified year
-    const yearReportData = await idb.getCaloriesForYear(db, date);
-    return yearReportData;
-  };
-
 
   return (
     <div className="App">
       <Header selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      <AddfoodItemButton onAdd={() => setModalIsOpen(true)} />
+      <AddfoodItemButton onAdd={() => setAddModalIsOpen(true)} />
       <AddFoodItemModal
-        isOpen={modalIsOpen}
-        onRequestClose={() => {
-          setEditingItem(null); // Reset editingItem state when modal closes
-          setModalIsOpen(false);
-        }}
+        isOpen={addModalIsOpen}
+        onRequestClose={() => setAddModalIsOpen(false)}
         onAddFoodItem={handleAddFoodItem}
-        editingItem={editingItem} // Pass editingItem state
-        onRemove={handleRemoveItem} // Pass the remove function
+        // Pass other necessary props
       />
-      <button onClick={() => { setReportType('day')}}>Generate Day Report</button>
-      <button onClick={() => { setReportType('month')}}>Generate Month Report</button>
-      <button onClick={() => { setReportType('year')}}>Generate Year Report</button>
+      <button onClick={() => generateReport('day')}>Generate Day Report</button>
+      <button onClick={() => generateReport('month')}>Generate Month Report</button>
+      <button onClick={() => generateReport('year')}>Generate Year Report</button>
       <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Snack" items={meals.Snack} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Drink" items={meals.Drink} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <Totals meals={meals} selectedDate={selectedDate} />
+      {reportModalIsOpen && (
+        <ReportModal
+          isOpen={reportModalIsOpen}
+          onRequestClose={() => setReportModalIsOpen(false)}
+          reportData={reportData}
+        />
+      )}
     </div>
   );
 };
