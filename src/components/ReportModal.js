@@ -5,6 +5,11 @@ import './css/AddFoodItemModal.css';
 Modal.setAppElement('#root');
 
 const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
+  
+  const handlePrint = () => {
+    window.print();
+  };
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -15,15 +20,34 @@ const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
     >
       <h2>Report Modal</h2>
       <div>
-        {/* Display report data here */}
         {reportData && (
           <div>
-            {/* Example content, replace with actual report data */}
-            <p>Report Data:</p>
-            <pre>{JSON.stringify(reportData, null, 2)}</pre>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Calorie</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.map((entry) => (
+                  <tr key={entry.id}>
+                    <td>{entry.id}</td>
+                    <td>{entry.calorie}</td>
+                    <td>{entry.category}</td>
+                    <td>{entry.Name}</td>
+                    <td>{entry.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
+      <button onClick={handlePrint}>Print</button>
       <button onClick={onRequestClose}>Close</button>
     </Modal>
   );

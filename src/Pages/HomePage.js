@@ -93,8 +93,10 @@ const HomePage = () => {
     if (!db) return;
     try {
       const currentDate = new Date();
+      console.log(currentDate.toISOString().split('T')[0]);
+  
       let reportData;
-
+  
       switch (type) {
         case 'day':
           reportData = await idb.getCaloriesForDay(db, currentDate);
@@ -109,13 +111,14 @@ const HomePage = () => {
           console.error('Invalid report type');
           return;
       }
-
+  
       setReportData(reportData); // Set the report data
       setReportModalIsOpen(true); // Open the report modal
     } catch (error) {
       console.error(`Error generating ${type} report:`, error);
     }
   };
+  
 
   return (
     <div className="App">

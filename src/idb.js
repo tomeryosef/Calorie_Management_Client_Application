@@ -127,15 +127,24 @@ idb.getCaloriesForDay = async (db, date) => {
     const caloriesStore = transaction.objectStore('calories');
     const calorieIndex = caloriesStore.index('calorieIndex');
     const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999); // Set the end of the day
-    const range = IDBKeyRange.bound(startOfDay.toISOString(), endOfDay.toISOString());
-    const request = calorieIndex.getAll(range);
+    const startOfDayDate = startOfDay.toISOString().split('T')[0]; // Extract date part from the provided date
+
+    const request = calorieIndex.openCursor();
+
+    const caloriesForDay = [];
+
     request.onsuccess = (event) => {
-      const caloriesForDay = event.target.result;
-      console.log('Calories for Day:', caloriesForDay);
-      resolve(caloriesForDay);
+      const cursor = event.target.result;
+      if (cursor) {
+        const storedDate = new Date(cursor.value.date);
+        const storedDateOnly = storedDate.toISOString().split('T')[0]; // Extract date part from the stored date
+        if (storedDateOnly === startOfDayDate) { // Compare date parts
+          caloriesForDay.push(cursor.value);
+        }
+        cursor.continue();
+      } else {
+        resolve(caloriesForDay);
+      }
     };
 
     request.onerror = (event) => {
@@ -144,6 +153,7 @@ idb.getCaloriesForDay = async (db, date) => {
     };
   });
 };
+
 
 idb.getCaloriesForMonth = async (db, date) => {
   return new Promise((resolve, reject) => {
@@ -155,16 +165,26 @@ idb.getCaloriesForMonth = async (db, date) => {
     const transaction = db.transaction(['calories'], 'readonly');
     const caloriesStore = transaction.objectStore('calories');
     const dateIndex = caloriesStore.index('calorieIndex');
-    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
-    const range = IDBKeyRange.bound(startOfMonth, endOfMonth);
+    const request = dateIndex.openCursor();
 
-    const request = dateIndex.getAll(range);
+    const caloriesForMonth = [];
 
     request.onsuccess = (event) => {
-      const caloriesForMonth = event.target.result;
-      resolve(caloriesForMonth);
+      const cursor = event.target.result;
+      if (cursor) {
+        const storedDate = new Date(cursor.value.date);
+        const storedYear = storedDate.getFullYear();
+        const storedMonth = storedDate.getMonth();
+        if (storedYear === year && storedMonth === month) {
+          caloriesForMonth.push(cursor.value);
+        }
+        cursor.continue();
+      } else {
+        resolve(caloriesForMonth);
+      }
     };
 
     request.onerror = (event) => {
@@ -173,6 +193,7 @@ idb.getCaloriesForMonth = async (db, date) => {
     };
   });
 };
+
 
 idb.getCaloriesForYear = async (db, date) => {
   return new Promise((resolve, reject) => {
@@ -184,16 +205,24 @@ idb.getCaloriesForYear = async (db, date) => {
     const transaction = db.transaction(['calories'], 'readonly');
     const caloriesStore = transaction.objectStore('calories');
     const dateIndex = caloriesStore.index('calorieIndex');
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const endOfYear = new Date(date.getFullYear(), 11, 31, 23, 59, 59, 999);
+    const year = date.getFullYear();
 
-    const range = IDBKeyRange.bound(startOfYear, endOfYear);
+    const request = dateIndex.openCursor();
 
-    const request = dateIndex.getAll(range);
+    const caloriesForYear = [];
 
     request.onsuccess = (event) => {
-      const caloriesForYear = event.target.result;
-      resolve(caloriesForYear);
+      const cursor = event.target.result;
+      if (cursor) {
+        const storedDate = new Date(cursor.value.date);
+        const storedYear = storedDate.getFullYear();
+        if (storedYear === year) {
+          caloriesForYear.push(cursor.value);
+        }
+        cursor.continue();
+      } else {
+        resolve(caloriesForYear);
+      }
     };
 
     request.onerror = (event) => {
@@ -202,3 +231,4 @@ idb.getCaloriesForYear = async (db, date) => {
     };
   });
 };
+
