@@ -5,11 +5,10 @@ import MealTable from '../components/MealTable';
 import Totals from '../components/Totals';
 import Header from '../components/Header';
 import { idb } from '../idb';
-import { useNavigate } from 'react-router-dom';
 import ReportModal from '../components/ReportModal'; // Import the ReportModal component
+import '../components/css/Homepage.css'; 
 
 const HomePage = () => {
-  const navigate = useNavigate();
   const [db, setDb] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date()));
   const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] });
@@ -130,9 +129,9 @@ const HomePage = () => {
         onAddFoodItem={handleAddFoodItem}
         // Pass other necessary props
       />
-      <button onClick={() => generateReport('day')}>Generate Day Report</button>
-      <button onClick={() => generateReport('month')}>Generate Month Report</button>
-      <button onClick={() => generateReport('year')}>Generate Year Report</button>
+      <button className="Reportbutton" onClick={() => generateReport('day')}>Generate This Day Report</button>
+      <button className="Reportbutton" onClick={() => generateReport('month')}>Generate This Month Report</button>
+      <button className="Reportbutton" onClick={() => generateReport('year')}>Generate This Year Report</button>
       <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
