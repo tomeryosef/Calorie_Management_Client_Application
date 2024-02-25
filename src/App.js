@@ -11,7 +11,6 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage selectedDate={selectedDate} />} />
-          <Route path="/report" element={<ReportPage />} />
         </Routes>
       </div>
     </Router>

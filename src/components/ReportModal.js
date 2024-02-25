@@ -25,7 +25,6 @@ const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
             <table>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Calorie</th>
                   <th>Category</th>
                   <th>Description</th>
@@ -35,11 +34,10 @@ const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
               <tbody>
                 {reportData.map((entry) => (
                   <tr key={entry.id}>
-                    <td>{entry.id}</td>
                     <td>{entry.calorie}</td>
                     <td>{entry.category}</td>
                     <td>{entry.Name}</td>
-                    <td>{entry.date}</td>
+                    <td>{entry.date.split('T')[0]}</td>
                   </tr>
                 ))}
               </tbody>
