@@ -15,7 +15,7 @@ const HomePage = () => {
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // State for the add food item modal
   const [reportModalIsOpen, setReportModalIsOpen] = useState(false); // State for the report modal
   const [reportData, setReportData] = useState(null); // State variable to hold report data
-
+  const [editingItem, setEditingItem] = useState(null);
   useEffect(() => {
     const initDB = async () => {
       try {
@@ -73,8 +73,8 @@ const HomePage = () => {
   };
 
   const handleEditItem = (item) => {
-    setAddModalIsOpen(true); // Open the add modal for editing
-    // Additional logic for editing item
+    setEditingItem(item); // Set the item to be edited
+    setAddModalIsOpen(true); // Open the modal for editing
   };
 
   const handleRemoveItem = async (id) => {
@@ -125,9 +125,12 @@ const HomePage = () => {
       <AddfoodItemButton onAdd={() => setAddModalIsOpen(true)} />
       <AddFoodItemModal
         isOpen={addModalIsOpen}
-        onRequestClose={() => setAddModalIsOpen(false)}
+        onRequestClose={() => {
+          setEditingItem(null); // Reset editingItem state when modal closes
+          setAddModalIsOpen(false);
+        }}
         onAddFoodItem={handleAddFoodItem}
-        // Pass other necessary props
+        editingItem={editingItem} // Pass editingItem state
       />
       <button className="Reportbutton" onClick={() => generateReport('day')}>Generate This Day Report</button>
       <button className="Reportbutton" onClick={() => generateReport('month')}>Generate This Month Report</button>
