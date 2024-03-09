@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import AddfoodItemButton from '../components/AddFoodItemButton';
+import AddFoodItemButton from '../components/AddFoodItemButton';
 import AddFoodItemModal from '../components/AddFoodItemModal';
 import MealTable from '../components/MealTable';
 import Totals from '../components/Totals';
 import Header from '../components/Header';
-import { idb } from '../idb';
-import ReportModal from '../components/ReportModal'; // Import the ReportModal component
-import '../components/css/Homepage.css'; 
+import { idb } from '../idb'; // IndexedDB utility functions for database operations.
+import ReportModal from '../components/ReportModal'; // Import the ReportModal component for generating reports.
+import '../components/css/Homepage.css'; // Import CSS for styling the homepage.
 
 const HomePage = () => {
-  const [db, setDb] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date()));
-  const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] });
-  const [addModalIsOpen, setAddModalIsOpen] = useState(false); // State for the add food item modal
-  const [reportModalIsOpen, setReportModalIsOpen] = useState(false); // State for the report modal
-  const [reportData, setReportData] = useState(null); // State variable to hold report data
-  const [editingItem, setEditingItem] = useState(null);
+  // State hooks for managing various aspects of the application.
+  const [db, setDb] = useState(null); // Database instance.
+  const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date())); // Currently selected date for displaying meals.
+  const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] }); // Meals organized by meal type.
+  const [addModalIsOpen, setAddModalIsOpen] = useState(false); // Controls the visibility of the add food item modal.
+  const [reportModalIsOpen, setReportModalIsOpen] = useState(false); // Controls the visibility of the report modal.
+  const [reportData, setReportData] = useState(null); // Holds the data for the report.
+  const [editingItem, setEditingItem] = useState(null); // Tracks the item being edited.
+
+  // Effect hook to initialize the database on component mount.
   useEffect(() => {
     const initDB = async () => {
       try {
@@ -29,20 +32,23 @@ const HomePage = () => {
     initDB();
   }, []);
 
+  // Effect hook to fetch meals whenever the selected date or database instance changes.
   useEffect(() => {
     fetchMealsForDate(selectedDate);
   }, [selectedDate, db]);
 
+  // Effect hook to update the local storage with the selected date.
   useEffect(() => {
     localStorage.setItem('selectedDate', selectedDate.toISOString());
   }, [selectedDate]);
 
+  // Function to fetch meals for a specific date from the database.
   const fetchMealsForDate = async (date) => {
     if (!db) return;
     try {
       const allMeals = await idb.getAllCalories(db);
       const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
-  
+
       allMeals.forEach(meal => {
         const category = meal.category;
         const mealDate = new Date(meal.date);
@@ -53,17 +59,19 @@ const HomePage = () => {
           mealsByType[category].push(meal);
         }
       });
-  
+
       setMeals(mealsByType);
     } catch (error) {
       console.error("Failed to fetch meals:", error);
     }
   };
 
+  // Function to handle adding a new food item to the database.
   const handleAddFoodItem = async (newFoodItem) => {
     if (!db) return;
     try {
       await idb.addCalories(db, { ...newFoodItem, date: selectedDate });
+      // Refresh meals after a short delay to ensure the database has been updated.
       setTimeout(() => {
         fetchMealsForDate(selectedDate);
       }, 500);
@@ -72,11 +80,13 @@ const HomePage = () => {
     }
   };
 
+  // Function to prepare an item for editing.
   const handleEditItem = (item) => {
-    setEditingItem(item); // Set the item to be edited
-    setAddModalIsOpen(true); // Open the modal for editing
+    setEditingItem(item); // Set the item to be edited.
+    setAddModalIsOpen(true); // Open the modal for editing.
   };
 
+  // Function to remove an item from the database.
   const handleRemoveItem = async (id) => {
     if (!db) return;
     try {
@@ -87,15 +97,13 @@ const HomePage = () => {
     }
   };
 
-  // Function to generate report data and open the modal
+  // Function to generate and display a report for a given time period.
   const generateReport = async (type) => {
     if (!db) return;
     try {
       const currentDate = new Date();
-      console.log(currentDate.toISOString().split('T')[0]);
-  
       let reportData;
-  
+
       switch (type) {
         case 'day':
           reportData = await idb.getCaloriesForDay(db, currentDate);
@@ -110,31 +118,31 @@ const HomePage = () => {
           console.error('Invalid report type');
           return;
       }
-  
-      setReportData(reportData); // Set the report data
-      setReportModalIsOpen(true); // Open the report modal
+
+      setReportData(reportData); // Set the report data.
+      setReportModalIsOpen(true); // Open the report modal.
     } catch (error) {
       console.error(`Error generating ${type} report:`, error);
     }
   };
-  
 
+  // JSX to render the homepage, including various components and buttons for user interaction.
   return (
     <div className="App">
       <Header selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      <AddfoodItemButton onAdd={() => setAddModalIsOpen(true)} />
+      <AddFoodItemButton onAdd={() => setAddModalIsOpen(true)} />
       <AddFoodItemModal
         isOpen={addModalIsOpen}
         onRequestClose={() => {
-          setEditingItem(null); // Reset editingItem state when modal closes
+          setEditingItem(null); // Reset editingItem state when modal closes.
           setAddModalIsOpen(false);
         }}
         onAddFoodItem={handleAddFoodItem}
-        editingItem={editingItem} // Pass editingItem state
+        editingItem={editingItem} // Pass editingItem state.
       />
-      <button className="Reportbutton" onClick={() => generateReport('day')}>Generate This Day Report</button>
-      <button className="Reportbutton" onClick={() => generateReport('month')}>Generate This Month Report</button>
-      <button className="Reportbutton" onClick={() => generateReport('year')}>Generate This Year Report</button>
+      <button className="ReportButton" onClick={() => generateReport('day')}>Generate This Day Report</button>
+      <button className="ReportButton" onClick={() => generateReport('month')}>Generate This Month Report</button>
+      <button className="ReportButton" onClick={() => generateReport('year')}>Generate This Year Report</button>
       <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
