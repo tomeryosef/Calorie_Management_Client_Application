@@ -1,6 +1,8 @@
 import React from 'react';
 import './css/MealTable.css'; 
 
+// Define the MealTable functional component
+// It takes 'category', 'items', 'onEdit', and 'onRemove' as props
 const MealTable = ({ category, items, onEdit, onRemove }) => {
   return (
     <div className="mealTable">

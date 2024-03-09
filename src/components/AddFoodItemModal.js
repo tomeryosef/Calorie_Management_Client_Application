@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/AddFoodItemModal.css';
 
+// Set the root element for the modal library
 Modal.setAppElement('#root');
 
+// Define the AddFoodItemModal functional component
 const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }) => {
+  // State variables to manage form inputs and validity
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [calorie, setCalorie] = useState('');
   const [isValid, setIsValid] = useState(false);
 
+  // Effect to initialize form fields when the modal is opened or editingItem changes
   useEffect(() => {
     if (editingItem) {
       setCategory(editingItem.category || '');
@@ -24,6 +28,7 @@ const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }
     }
   }, [editingItem, isOpen]);
 
+  // Handler function for input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -46,28 +51,30 @@ const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }
     setIsValid(category !== '' && description !== '' && calorie !== '');
   };
 
-const handleSubmit = () => {
-  if (isValid) {
-    const foodItem = {
-      calorie: parseInt(calorie, 10),
-      category: category,
-      Name: description,
-    };
+  // Handler function for form submission
+  const handleSubmit = () => {
+    if (isValid) {
+      // Create a foodItem object with form values
+      const foodItem = {
+        calorie: parseInt(calorie, 10),
+        category: category,
+        Name: description,
+      };
 
-    if (editingItem) {
-      // If editing an existing item, pass the editingItem.id
-      onAddFoodItem({ ...foodItem, id: editingItem.id }, true);
-    } else {
-      // If adding a new item, no need to pass the id
-      onAddFoodItem(foodItem, false);
+      if (editingItem) {
+        // If editing an existing item, pass the editingItem.id
+        onAddFoodItem({ ...foodItem, id: editingItem.id }, true);
+      } else {
+        // If adding a new item, no need to pass the id
+        onAddFoodItem(foodItem, false);
+      }
+
+      // Close the modal after submission
+      onRequestClose();
     }
+  };
 
-    onRequestClose();
-  }
-};
-
-  
-
+  // Render the modal component with form elements
   return (
     <Modal
       isOpen={isOpen}
@@ -78,6 +85,7 @@ const handleSubmit = () => {
     >
       <h2>{editingItem ? 'Edit Food Item' : 'Add Food Item'}</h2>
       <form onSubmit={handleSubmit}>
+        {/* Category dropdown */}
         <label>
           Category:
           <select name="category" value={category} onChange={handleInputChange} required>
@@ -89,6 +97,7 @@ const handleSubmit = () => {
             <option value="Drink">Drink</option>
           </select>
         </label>
+        {/* Description input */}
         <label>
           Description:
           <input
@@ -99,6 +108,7 @@ const handleSubmit = () => {
             required
           />
         </label>
+        {/* Calories input */}
         <label>
           Calories:
           <input
@@ -110,6 +120,7 @@ const handleSubmit = () => {
             min="0"
           />
         </label>
+        {/* Submit button */}
         <button type="submit" disabled={!isValid}>
           {editingItem ? 'Update' : 'Add'}
         </button>

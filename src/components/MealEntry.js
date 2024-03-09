@@ -2,6 +2,8 @@
 import React from 'react';
 import './css/MealEntry.css'; 
 
+// Define the MealEntry functional component
+// It takes 'mealType' and 'entries' as props
 const MealEntry = ({ mealType, entries }) => {
   return (
     <div className="meal-entry">

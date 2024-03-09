@@ -2,10 +2,14 @@ import React from 'react';
 import Modal from 'react-modal';
 import './css/AddFoodItemModal.css';
 
+// Set the root element for the modal library
 Modal.setAppElement('#root');
 
+// Define the ReportModal functional component
+// It takes 'isOpen', 'onRequestClose', and 'reportData' as props
 const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
   
+  // Handler function for printing the report
   const handlePrint = () => {
     window.print();
   };
