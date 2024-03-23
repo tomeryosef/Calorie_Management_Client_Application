@@ -24,13 +24,12 @@ const HomePage = () => {
       try {
         const db = await idb.openCalorisDB('myCaloriesDB', 1);
         setDb(db);
-        fetchMealsForDate(selectedDate);
       } catch (error) {
         console.error('IndexedDB open error:', error);
       }
     };
     initDB();
-  }, []);
+}, []);
 
  // Function to fetch meals for a specific date from the database.
  const fetchMealsForDate = useCallback(async (date) => {
