@@ -59,7 +59,7 @@ const HomePage = () => {
 // useEffect to fetch meals for selected date
 useEffect(() => {
   fetchMealsForDate(selectedDate);
-}, [selectedDate, fetchMealsForDate]); 
+}, [selectedDate, fetchMealsForDate]);
 
 // Effect hook to update the local storage with the selected date.
 useEffect(() => {
