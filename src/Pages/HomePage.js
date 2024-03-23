@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AddFoodItemButton from '../components/AddFoodItemButton';
 import AddFoodItemModal from '../components/AddFoodItemModal';
 import MealTable from '../components/MealTable';
@@ -33,7 +33,7 @@ const HomePage = () => {
   }, []);
 
  // Function to fetch meals for a specific date from the database.
-const fetchMealsForDate = async (date) => {
+ const fetchMealsForDate = useCallback(async (date) => {
   if (!db) return;
   try {
     const allMeals = await idb.getAllCalories(db);
@@ -54,12 +54,12 @@ const fetchMealsForDate = async (date) => {
   } catch (error) {
     console.error("Failed to fetch meals:", error);
   }
-};
+}, [db]);
 
 // useEffect to fetch meals for selected date
 useEffect(() => {
   fetchMealsForDate(selectedDate);
-}, [fetchMealsForDate, selectedDate, db]);
+}, [selectedDate, fetchMealsForDate]); 
 
 // Effect hook to update the local storage with the selected date.
 useEffect(() => {
