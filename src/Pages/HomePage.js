@@ -32,39 +32,39 @@ const HomePage = () => {
     initDB();
   }, []);
 
-  // Effect hook to fetch meals whenever the selected date or database instance changes.
-  useEffect(() => {
-    fetchMealsForDate(selectedDate);
-  }, [selectedDate, db]);
+ // Function to fetch meals for a specific date from the database.
+const fetchMealsForDate = async (date) => {
+  if (!db) return;
+  try {
+    const allMeals = await idb.getAllCalories(db);
+    const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
 
-  // Effect hook to update the local storage with the selected date.
-  useEffect(() => {
-    localStorage.setItem('selectedDate', selectedDate.toISOString());
-  }, [selectedDate]);
+    allMeals.forEach(meal => {
+      const category = meal.category;
+      const mealDate = new Date(meal.date);
+      
+      if (mealDate.getFullYear() === date.getFullYear() &&
+          mealDate.getMonth() === date.getMonth() &&
+          mealDate.getDate() === date.getDate()) {
+        mealsByType[category].push(meal);
+      }
+    });
 
-  // Function to fetch meals for a specific date from the database.
-  const fetchMealsForDate = async (date) => {
-    if (!db) return;
-    try {
-      const allMeals = await idb.getAllCalories(db);
-      const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
+    setMeals(mealsByType);
+  } catch (error) {
+    console.error("Failed to fetch meals:", error);
+  }
+};
 
-      allMeals.forEach(meal => {
-        const category = meal.category;
-        const mealDate = new Date(meal.date);
-        
-        if (mealDate.getFullYear() === date.getFullYear() &&
-            mealDate.getMonth() === date.getMonth() &&
-            mealDate.getDate() === date.getDate()) {
-          mealsByType[category].push(meal);
-        }
-      });
+// useEffect to fetch meals for selected date
+useEffect(() => {
+  fetchMealsForDate(selectedDate);
+}, [fetchMealsForDate, selectedDate, db]);
 
-      setMeals(mealsByType);
-    } catch (error) {
-      console.error("Failed to fetch meals:", error);
-    }
-  };
+// Effect hook to update the local storage with the selected date.
+useEffect(() => {
+  localStorage.setItem('selectedDate', selectedDate.toISOString());
+}, [selectedDate]);
 
   // Function to handle adding a new food item to the database.
   const handleAddFoodItem = async (newFoodItem) => {
