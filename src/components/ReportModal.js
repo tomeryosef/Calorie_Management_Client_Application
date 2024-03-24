@@ -7,14 +7,14 @@ Modal.setAppElement('#root');
 
 // Define the ReportModal functional component
 // It takes 'isOpen', 'onRequestClose', and 'reportData' as props
-const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
-  
+const ReportModal = ({ isOpen, onRequestClose, reportData, selectedDate }) => {
+
   // Handler function for printing the report
   const handlePrint = () => {
     window.print();
   };
   
-  return (
+ return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
@@ -24,6 +24,7 @@ const ReportModal = ({ isOpen, onRequestClose, reportData }) => {
     >
       <h2>Report Modal</h2>
       <div>
+        <p>Date Selected: {selectedDate.toDateString()}</p> {/* Render selectedDate */}
         {reportData && (
           <div>
             <table>

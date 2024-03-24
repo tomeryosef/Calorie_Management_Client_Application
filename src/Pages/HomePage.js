@@ -12,7 +12,7 @@ const HomePage = () => {
   // State hooks for managing various aspects of the application.
   const [db, setDb] = useState(null); // Database instance.
   const [selectedDate, setSelectedDate] = useState(new Date(localStorage.getItem('selectedDate') || new Date())); // Currently selected date for displaying meals.
-  const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] }); // Meals organized by meal type.
+  const [meals, setMeals] = useState({ Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [], Other:[], }); // Meals organized by meal type.
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // Controls the visibility of the add food item modal.
   const [reportModalIsOpen, setReportModalIsOpen] = useState(false); // Controls the visibility of the report modal.
   const [reportData, setReportData] = useState(null); // Holds the data for the report.
@@ -36,7 +36,7 @@ const HomePage = () => {
   if (!db) return;
   try {
     const allMeals = await idb.getAllCalories(db);
-    const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [] };
+    const mealsByType = { Breakfast: [], Lunch: [], Dinner: [], Snack: [], Drink: [], Other: [] };
 
     allMeals.forEach(meal => {
       const category = meal.category;
@@ -97,33 +97,32 @@ useEffect(() => {
   };
 
   // Function to generate and display a report for a given time period.
-  const generateReport = async (type) => {
-    if (!db) return;
-    try {
-      const currentDate = new Date();
-      let reportData;
-
-      switch (type) {
-        case 'day':
-          reportData = await idb.getCaloriesForDay(db, currentDate);
-          break;
-        case 'month':
-          reportData = await idb.getCaloriesForMonth(db, currentDate);
-          break;
-        case 'year':
-          reportData = await idb.getCaloriesForYear(db, currentDate);
-          break;
-        default:
-          console.error('Invalid report type');
-          return;
-      }
-
-      setReportData(reportData); // Set the report data.
-      setReportModalIsOpen(true); // Open the report modal.
-    } catch (error) {
-      console.error(`Error generating ${type} report:`, error);
+  // Function to generate and display a report for a given time period.
+const generateReport = async (type) => {
+  if (!db) return;
+  try {
+    let reportData;
+    switch (type) {
+      case 'day':
+        reportData = await idb.getCaloriesForDay(db, selectedDate);
+        break;
+      case 'month':
+        reportData = await idb.getCaloriesForMonth(db, selectedDate);
+        break;
+      case 'year':
+        reportData = await idb.getCaloriesForYear(db, selectedDate);
+        break;
+      default:
+        console.error('Invalid report type');
+        return;
     }
-  };
+    setReportData(reportData); // Set the report data.
+    setReportModalIsOpen(true); // Open the report modal.
+  } catch (error) {
+    console.error(`Error generating ${type} report:`, error);
+  }
+};
+
 
   // JSX to render the homepage, including various components and buttons for user interaction.
   return (
@@ -147,14 +146,17 @@ useEffect(() => {
       <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Snack" items={meals.Snack} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Drink" items={meals.Drink} onEdit={handleEditItem} onRemove={handleRemoveItem} />
+      <MealTable category="Other" items={meals.Other} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <Totals meals={meals} selectedDate={selectedDate} />
       {reportModalIsOpen && (
-        <ReportModal
-          isOpen={reportModalIsOpen}
-          onRequestClose={() => setReportModalIsOpen(false)}
-          reportData={reportData}
-        />
-      )}
+  <ReportModal
+    isOpen={reportModalIsOpen}
+    onRequestClose={() => setReportModalIsOpen(false)}
+    reportData={reportData}
+    selectedDate={selectedDate} // Pass selectedDate to ReportModal
+  />
+)}
+
     </div>
   );
 };

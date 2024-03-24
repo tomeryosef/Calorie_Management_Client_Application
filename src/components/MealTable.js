@@ -8,7 +8,7 @@ const MealTable = ({ category, items, onEdit, onRemove }) => {
     <div className="mealTable">
       <h2>{category}</h2>
       <ul>
-      {items.map((item, index) => (
+      {items?.map((item, index) => (
       <li key={index}>
         <span>{item.Name}</span> 
         <span>{item.calorie} kcal</span>
@@ -19,7 +19,7 @@ const MealTable = ({ category, items, onEdit, onRemove }) => {
     </li>
     ))}
       </ul>
-      {items.length === 0 && <p>No items added for {category} yet.</p>}
+      {items?.length === 0 && <p>No items added for {category} yet.</p>}
     </div>
   );
 };

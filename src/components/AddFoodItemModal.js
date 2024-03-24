@@ -95,6 +95,7 @@ const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }
             <option value="Dinner">Dinner</option>
             <option value="Snack">Snack</option>
             <option value="Drink">Drink</option>
+            <option value="Other">Other</option>
           </select>
         </label>
         {/* Description input */}
