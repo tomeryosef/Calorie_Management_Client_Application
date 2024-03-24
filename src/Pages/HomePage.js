@@ -138,9 +138,9 @@ const generateReport = async (type) => {
         onAddFoodItem={handleAddFoodItem}
         editingItem={editingItem} // Pass editingItem state.
       />
-      <button className="ReportButton" onClick={() => generateReport('day')}>Generate This Day Report</button>
-      <button className="ReportButton" onClick={() => generateReport('month')}>Generate This Month Report</button>
-      <button className="ReportButton" onClick={() => generateReport('year')}>Generate This Year Report</button>
+      <button className="ReportButton" onClick={() => generateReport('day')}>Generate Selected Day Report</button>
+      <button className="ReportButton" onClick={() => generateReport('month')}>Generate Selected Month Report</button>
+      <button className="ReportButton" onClick={() => generateReport('year')}>Generate Selected Year Report</button>
       <MealTable category="Breakfast" items={meals.Breakfast} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Lunch" items={meals.Lunch} onEdit={handleEditItem} onRemove={handleRemoveItem} />
       <MealTable category="Dinner" items={meals.Dinner} onEdit={handleEditItem} onRemove={handleRemoveItem} />
