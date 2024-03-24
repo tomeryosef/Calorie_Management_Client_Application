@@ -15,13 +15,7 @@ const ReportModal = ({ isOpen, onRequestClose, reportData, selectedDate }) => {
   };
   
  return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel="Report Modal"
-      className="Modal"
-      overlayClassName="Overlay"
-    >
+    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Report Modal" className="Modal" overlayClassName="Overlay">
       <h2>Report Modal</h2>
       <div>
         <p>Date Selected: {selectedDate.toDateString()}</p> {/* Render selectedDate */}

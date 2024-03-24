@@ -17,7 +17,7 @@ const AddFoodItemModal = ({ isOpen, onRequestClose, onAddFoodItem, editingItem }
   useEffect(() => {
     if (editingItem) {
       setCategory(editingItem.category || '');
-      setDescription(editingItem.Name || ''); // Use "Name" for consistency
+      setDescription(editingItem.Name || ''); 
       setCalorie(editingItem.calorie ? editingItem.calorie.toString() : '');
       setIsValid(true);
     } else {
